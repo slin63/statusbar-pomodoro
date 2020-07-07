@@ -74,6 +74,7 @@ def signal_handler(sig, frame):
 
 
 if args.stop:
+    os.system(f"pkill -f {os.path.abspath(__file__)}")
     signal_handler(None, None)
 
 signal.signal(signal.SIGINT, signal_handler)
