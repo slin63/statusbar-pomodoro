@@ -1,0 +1,97 @@
+#!/usr/bin/env python3
+import signal
+import os
+import argparse
+from time import sleep
+from sys import argv, exit
+
+HOME = os.getenv("HOME")
+FILE = f"/tmp/.pomoout"
+
+parser = argparse.ArgumentParser(description="A pomodoro timer!")
+parser.add_argument(
+    "-s", "--stop", action="store_true", help="Your current goal",
+)
+parser.add_argument(
+    "-q",
+    "--quiet",
+    action="store_true",
+    help="Disable the voice announcement",
+)
+parser.add_argument(
+    "-g", "--goal", type=str, nargs="+", help="Your current goal",
+)
+parser.add_argument(
+    "--work",
+    type=int,
+    help="length of the working session (minutes)",
+    default=25,
+)
+parser.add_argument(
+    "--rest",
+    type=int,
+    help="length of the resting session (minutes)",
+    default=5,
+)
+parser.add_argument(
+    "--debug", action="store_true", help="enable debugging mode",
+)
+
+args = parser.parse_args()
+DEBUG = args.debug
+if DEBUG:
+    print("args:", args)
+
+
+WORK_MINUTES = int(args.work)
+REST_MINUTES = int(args.rest)
+EMPTY_MESSAGE = ""
+SECONDS_IN_A_MINUTE = 60
+
+GOAL_STR = args.goal or ""
+if GOAL_STR:
+    as_str = " ".join(args.goal)
+    GOAL_STR = f" ⇒ {as_str}"
+
+
+def count_down(minutes: int, message: str) -> None:
+    for time_remaining in range(minutes, 0, -1):
+        if DEBUG:
+            print("Time remaining:", time_remaining)
+            print("Writing to:", FILE)
+
+        pomo_file = open(FILE, "w+")
+        pomo_file.write(message.format(f"{time_remaining}m"))
+        pomo_file.close()
+        sleep(SECONDS_IN_A_MINUTE)
+
+
+def signal_handler(sig, frame):
+    pomo_file = open(FILE, "w+")
+    pomo_file.write("")
+    pomo_file.close()
+    exit(0)
+
+
+if args.stop:
+    signal_handler(None, None)
+
+signal.signal(signal.SIGINT, signal_handler)
+
+# Kill any ongoing pomo timers
+os.system(f"pkill -f {os.path.abspath(__file__)}")
+
+# Work session
+count_down(WORK_MINUTES, "🔥{}" + GOAL_STR)
+if not args.quiet:
+    os.system('say -v Junior -r 40 "beep beep work done!"')
+
+# Rest session
+count_down(REST_MINUTES, "🌜{}")
+if not args.quiet:
+    os.system('say -v Junior -r 40 "beep beep rest done!"')
+
+# Clear
+pomo_file = open(FILE, "w+")
+pomo_file.write(EMPTY_MESSAGE)
+pomo_file.close()
