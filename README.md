@@ -11,8 +11,7 @@ Supports:
 
 
 ## Usage
-It's recommended you run `pomo` as a background process by suffixing with `&`.
-
+It's recommended you run `pomo` as a detached background process by calling it with `nohup pomo -g "your inspirational goal" &> /dev/null &`
 - Starting the timer
     - with a goal: `$ pomo -g get stuff done &`
     - with no goal: `$ pomo &`
