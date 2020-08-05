@@ -13,13 +13,13 @@ Supports:
 ## Usage
 It's recommended you run `pomo` as a detached background process by calling it with `nohup pomo -g "your inspirational goal" &> /dev/null &`
 - Starting the timer
-    - with a goal: `$ pomo -g get stuff done &`
-    - with no goal: `$ pomo &`
-    - with custom work / rest times: `$ pomo --work 30 --rest 10 &`
+    - with a goal: `$ pomo -g get stuff done`
+    - with no goal: `$ pomo`
+    - with custom work / rest times: `$ pomo --work 30 --rest 10`
 - Stopping the timer
     - `$ pomo -s`
 - Disabling the creepy voice
-    - `$ pomo -q &`
+    - `$ pomo -q`
 
 ```
 usage: pomo [-h] [-s] [-g GOAL [GOAL ...]] [--work WORK] [--rest REST]
